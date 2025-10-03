@@ -1,4 +1,6 @@
 import copy
+import Shape
+import utils
 
 class GameState:
     def __init__(self, filepath=None):
@@ -23,7 +25,6 @@ class GameState:
             self.cols = 0
             self.rows = 0
             self.grid = []
-
 
     def print(self):
         print(f'{self.cols}, {self.rows},')
@@ -57,3 +58,36 @@ class GameState:
                 if self.grid[row][col] == -1:
                     return False
         return True
+    
+    def extract_shape_dictionary(self):
+        # loops through grid and adds coordinate of each shape to a dictionary
+        # the dictionary contains a list of coordinates for each shape
+        shape_coords = {}
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if self.grid[row][col] > 1:
+                    if self.grid[row][col] not in shape_coords:
+                        shape_coords[self.grid[row][col]] = [(row, col)]
+                    else:
+                        shape_coords[self.grid[row][col]].append((row, col))
+        return shape_coords
+    
+    def create_shapes(self):
+        # from the shape dictionary, a Shape object is created for each dictionary item
+        shape_coords = self.extract_shape_dictionary()
+        self.shapes = []
+        for id, coords in shape_coords.items():
+            new_shape = Shape.Shape(id, coords)
+            self.shapes.append(new_shape)
+
+    def get_all_moves(self):
+        # get moves is called for each shape, and all moves are appended to a list
+        all_moves = []
+        for shape in self.shapes:
+            moves = shape.get_all_moves(self.grid)
+            all_moves += moves
+        return all_moves
+    
+    def print_all_moves(self, all_moves):
+        for move in all_moves:
+            print(move)
