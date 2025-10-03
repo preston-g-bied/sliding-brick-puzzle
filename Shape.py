@@ -3,20 +3,23 @@ import utils
 class Shape:
     def __init__(self, id, coords):
         # the shape class keeps track of the dimensions, id number, max/min coordinate values, and a list of all coordinate values
+        self.coordinates = coords
+        self.id = id
+        self.update_min_max()
+        x = self.max_x - self.min_x
+        y = self.max_y - self.min_y
+        self.dimensions = (x+1, y+1)
+
+    def update_min_max(self):
         xs = []
         ys = []
-        for coord in coords:
+        for coord in self.coordinates:
             xs.append(coord[0])
             ys.append(coord[1])
-        x = max(xs) - min(xs)
-        y = max(ys) - min(ys)
         self.min_x = min(xs)
         self.min_y = min(ys)
         self.max_x = max(xs)
         self.max_y = max(ys)
-        self.dimensions = (x+1, y+1)
-        self.coordinates = coords
-        self.id = id
 
     # the below functions get the four principal faces of shapes by comparing to max/min coordinate values
 
@@ -48,16 +51,32 @@ class Shape:
                 right_coords.append(coord)
         return right_coords
     
-    # the below code uses the check functions (from utils) to get all possible moves of a shape
-    # it returns a list of moves of the form (shape id, move)
     def get_all_moves(self, grid):
+        # the below code uses the check functions (from utils) to get all possible moves of a shape
+        # it returns a list of moves of the form (shape id, move)
         moves = []
         if utils.check_up(self, grid):
-            moves.append((self.id, "up"))
+            moves.append((self.id, utils.Direction.UP.value))
         if utils.check_down(self, grid):
-            moves.append((self.id, "down"))
+            moves.append((self.id, utils.Direction.DOWN.value))
         if utils.check_left(self, grid):
-            moves.append((self.id, "left"))
+            moves.append((self.id, utils.Direction.LEFT.value))
         if utils.check_right(self, grid):
-            moves.append((self.id, "right"))
+            moves.append((self.id, utils.Direction.RIGHT.value))
         return moves
+    
+    def make_move(self, move):
+        # adjust the x or y value of all coordinates depending on the move direction
+        if move == utils.Direction.UP:
+            for coord in self.coordinates:
+                coord[0] -= 1
+        if move == utils.Direction.DOWN:
+            for coord in self.coordinates:
+                coord[0] += 1
+        if move == utils.Direction.LEFT:
+            for coord in self.coordinates:
+                coord[1] -= 1
+        if move == utils.Direction.RIGHT:
+            for coord in self.coordinates:
+                coord[1] += 1
+        self.update_min_max()

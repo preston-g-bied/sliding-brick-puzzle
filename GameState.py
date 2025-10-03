@@ -26,6 +26,8 @@ class GameState:
             self.rows = 0
             self.grid = []
 
+        self.create_shapes()
+
     def print(self):
         print(f'{self.cols}, {self.rows},')
 
@@ -75,15 +77,15 @@ class GameState:
     def create_shapes(self):
         # from the shape dictionary, a Shape object is created for each dictionary item
         shape_coords = self.extract_shape_dictionary()
-        self.shapes = []
+        self.shapes = {}
         for id, coords in shape_coords.items():
             new_shape = Shape.Shape(id, coords)
-            self.shapes.append(new_shape)
+            self.shapes[id] = new_shape
 
     def get_all_moves(self):
         # get moves is called for each shape, and all moves are appended to a list
         all_moves = []
-        for shape in self.shapes:
+        for shape in self.shapes.values():
             moves = shape.get_all_moves(self.grid)
             all_moves += moves
         return all_moves
@@ -91,3 +93,45 @@ class GameState:
     def print_all_moves(self, all_moves):
         for move in all_moves:
             print(move)
+
+    def apply_move(self, shape_move):
+        shape_id, move = shape_move
+        shape = self.shapes[shape_id]
+        shape.make_move(move)
+        
+        if move == utils.Direction.UP.value:
+            temp = shape.get_bottom_face()
+            for coord in shape.coordinates:
+                x, y = coord
+                self.grid[x-1][y] = self.grid[x][y]
+            for coord in temp:
+                x, y = coord
+                self.grid[x][y] = 0
+
+        if move == utils.Direction.DOWN.value:
+            temp = shape.get_top_face()
+            for coord in shape.coordinates:
+                x, y = coord
+                self.grid[x+1][y] = self.grid[x][y]
+                print(f'{self.grid[x][y]} -> {self.grid[x+1][y]}')
+            for coord in temp:
+                x, y = coord
+                self.grid[x][y] = 0
+
+        if move == utils.Direction.LEFT.value:
+            temp = shape.get_right_face()
+            for coord in shape.coordinates:
+                x, y = coord
+                self.grid[x][y-1] = self.grid[x][y]
+            for coord in temp:
+                x, y = coord
+                self.grid[x][y] = 0
+
+        if move == utils.Direction.RIGHT.value:
+            temp = shape.get_left_face()
+            for coord in shape.coordinates:
+                x, y = coord
+                self.grid[x][y+1] = self.grid[x][y]
+            for coord in temp:
+                x, y = coord
+                self.grid[x][y] = 0
