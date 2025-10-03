@@ -67,16 +67,16 @@ class Shape:
     
     def make_move(self, move):
         # adjust the x or y value of all coordinates depending on the move direction
-        if move == utils.Direction.UP:
+        if move == utils.Direction.UP.value:
             for coord in self.coordinates:
                 coord[0] -= 1
-        if move == utils.Direction.DOWN:
+        if move == utils.Direction.DOWN.value:
             for coord in self.coordinates:
                 coord[0] += 1
-        if move == utils.Direction.LEFT:
+        if move == utils.Direction.LEFT.value:
             for coord in self.coordinates:
                 coord[1] -= 1
-        if move == utils.Direction.RIGHT:
+        if move == utils.Direction.RIGHT.value:
             for coord in self.coordinates:
                 coord[1] += 1
         self.update_min_max()
