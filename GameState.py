@@ -4,6 +4,7 @@ import utils
 
 class GameState:
     def __init__(self, filepath=None):
+        # init creates a 2D matrix grid, saves the dimensions, and creates the shapes
         # allow option for empty filepath for copying
         if filepath:
             # read file to extract dimensions and game grid
@@ -108,3 +109,9 @@ class GameState:
         # place shape in new position on the grid
         for x, y in shape.coordinates:
             self.grid[x][y] = shape.id
+
+    def apply_move_clone(self, shape_move):
+        # creates a new state with the applied move
+        new_state = self.clone()
+        new_state.apply_move(shape_move)
+        return new_state
