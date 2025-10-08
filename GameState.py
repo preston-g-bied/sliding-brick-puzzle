@@ -27,18 +27,18 @@ class GameState:
             self.rows = 0
             self.grid = []
 
-        self.create_shapes()
+        self._create_shapes()
 
     def print(self):
         print(f'{self.cols}, {self.rows},')
 
         # loop through rows and print each string
-        # aligns for negative numbers
+        # aligns for negative numbers and 2-digit numbers
         for r in range(self.rows):
             row = self.grid[r]
             row_string = ''
             for item in row:
-                if item < 0:
+                if item < 0 or item > 9:
                     row_string += f' {item},'
                 else:
                     row_string += f'  {item},'
@@ -62,7 +62,7 @@ class GameState:
                     return False
         return True
     
-    def extract_shape_dictionary(self):
+    def _extract_shape_dictionary(self):
         # loops through grid and adds coordinate of each shape to a dictionary
         # the dictionary contains a list of coordinates for each shape
         shape_coords = {}
@@ -75,9 +75,9 @@ class GameState:
                         shape_coords[self.grid[row][col]].append([row, col])
         return shape_coords
     
-    def create_shapes(self):
+    def _create_shapes(self):
         # from the shape dictionary, a Shape object is created for each dictionary item
-        shape_coords = self.extract_shape_dictionary()
+        shape_coords = self._extract_shape_dictionary()
         self.shapes = {}
         for id, coords in shape_coords.items():
             new_shape = Shape.Shape(id, coords)
@@ -129,3 +129,23 @@ class GameState:
                 if state1_grid[x][y] != state2_grid[x][y]:
                     return False
         return True
+    
+    def normalize(self):
+        norm = self.clone()
+        next_idx = 3
+        for x in range(norm.rows):
+            for y in range(norm.cols):
+                if norm.grid[x][y] == next_idx:
+                    next_idx += 1
+                elif norm.grid[x][y] > next_idx:
+                    norm._swap_idx(next_idx, norm.grid[x][y])
+                    next_idx += 1
+        return norm
+    
+    def _swap_idx(self, idx1, idx2):
+        for x in range(self.rows):
+            for y in range(self.cols):
+                if self.grid[x][y] == idx1:
+                    self.grid[x][y] = idx2
+                elif self.grid[x][y] == idx2:
+                    self.grid[x][y] = idx1

@@ -32,3 +32,8 @@ if command == "compare":
     gs1 = GameState('SBP-levels/' + sys.argv[2])
     gs2 = GameState('SBP-levels/' + sys.argv[3])
     print(gs1.compare(gs2))
+
+if command == "norm":
+    gs = GameState('SBP-levels/' + sys.argv[2])
+    norm_gs = gs.normalize()
+    norm_gs.print()
