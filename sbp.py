@@ -27,3 +27,8 @@ if command == "applyMove":
     
     gs.apply_move(move_tuple)
     gs.print()
+
+if command == "compare":
+    gs1 = GameState('SBP-levels/' + sys.argv[2])
+    gs2 = GameState('SBP-levels/' + sys.argv[3])
+    print(gs1.compare(gs2))

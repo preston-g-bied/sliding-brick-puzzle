@@ -115,3 +115,17 @@ class GameState:
         new_state = self.clone()
         new_state.apply_move(shape_move)
         return new_state
+    
+    def compare(self, state2):
+        # compares current state with another state
+        # if dimensions are unequal, states are unequal
+        if self.cols != state2.cols or self.rows != state2.rows:
+            return False
+        # iterate over grid to make sure each square is equal
+        state1_grid = self.grid
+        state2_grid = state2.grid
+        for x in range(self.rows):
+            for y in range(self.cols):
+                if state1_grid[x][y] != state2_grid[x][y]:
+                    return False
+        return True
