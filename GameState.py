@@ -28,6 +28,14 @@ class GameState:
             self.rows = 0
             self.grid = []
 
+        # store base grid
+        self.base_grid = copy.deepcopy(self.grid)
+        # set all shape positions to 0 in base grid
+        for x in range(self.rows):
+            for y in range(self.cols):
+                if self.base_grid[x][y] > 1:
+                    self.base_grid[x][y] = 0
+
         self._create_shapes()
 
     def print(self):
@@ -52,6 +60,7 @@ class GameState:
         new_gamestate.cols = self.cols
         new_gamestate.rows = self.rows
         new_gamestate.grid = copy.deepcopy(self.grid)
+        new_gamestate.base_grid = copy.deepcopy(self.base_grid)
 
         # create shapes for new state
         new_gamestate._create_shapes()
@@ -62,7 +71,7 @@ class GameState:
         # loop over grid and check for -1
         for row in range(self.rows):
             for col in range(self.cols):
-                if self.grid[row][col] == -1:
+                if self.base_grid[row][col] == -1 and self.grid[row][col] != 2:
                     return False
         return True
     
@@ -105,7 +114,7 @@ class GameState:
         
         # clear shape from the grid
         for x, y in shape.coordinates:
-            self.grid[x][y] = 0
+            self.grid[x][y] = self.base_grid[x][y]
 
         # update shape coordinates
         shape.make_move(move)
