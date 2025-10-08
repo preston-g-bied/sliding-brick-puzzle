@@ -1,6 +1,7 @@
 import sys
 import ast
 from GameState import GameState
+from GameState import random_walk
 
 command = sys.argv[1]
 
@@ -37,3 +38,8 @@ if command == "norm":
     gs = GameState('SBP-levels/' + sys.argv[2])
     norm_gs = gs.normalize()
     norm_gs.print()
+
+if command == "random":
+    gs = GameState('SBP-levels/' + sys.argv[2])
+    N = int(sys.argv[3])
+    random_walk(gs, N)

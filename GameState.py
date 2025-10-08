@@ -1,6 +1,7 @@
 import copy
 import Shape
 import utils
+import random
 
 class GameState:
     def __init__(self, filepath=None):
@@ -51,6 +52,9 @@ class GameState:
         new_gamestate.cols = self.cols
         new_gamestate.rows = self.rows
         new_gamestate.grid = copy.deepcopy(self.grid)
+
+        # create shapes for new state
+        new_gamestate._create_shapes()
 
         return new_gamestate
     
@@ -131,6 +135,8 @@ class GameState:
         return True
     
     def normalize(self):
+        # return normalized grid
+        # taken from pseudocode in assignment sheet
         norm = self.clone()
         next_idx = 3
         for x in range(norm.rows):
@@ -143,9 +149,34 @@ class GameState:
         return norm
     
     def _swap_idx(self, idx1, idx2):
+        # helper function taken from pseudocode in assignment sheet
         for x in range(self.rows):
             for y in range(self.cols):
                 if self.grid[x][y] == idx1:
                     self.grid[x][y] = idx2
                 elif self.grid[x][y] == idx2:
                     self.grid[x][y] = idx1
+
+def random_walk(state, N):
+    # print initial state
+    state.print()
+    print('\n')
+    # set variables for loop
+    at_goal = False
+    moves = 0
+    # loop until goal is reached or moves exceeds N
+    while not at_goal and moves < N:
+        # get all possible moves and choose a random one
+        possible_moves = state.get_all_moves()
+        next_move = random.choice(possible_moves)
+        # apply the move and normalize the state
+        state = state.apply_move_clone(next_move)
+        state = state.normalize()
+        # print the move
+        print(next_move)
+        state.print()
+        print('\n')
+        # check if solved and increment moves
+        if state.is_solved():
+            at_goal = True
+        moves = moves + 1
