@@ -13,6 +13,8 @@ def check_up(shape, grid):
     top_face = shape.get_top_face()
     for coord in top_face:
         x, y = coord
+        if x - 1 < 0:
+            return False
         if grid[x-1][y] > 0:
             return False
     return True
@@ -21,6 +23,8 @@ def check_down(shape, grid):
     bottom_face = shape.get_bottom_face()
     for coord in bottom_face:
         x, y, = coord
+        if x + 1 >= len(grid):
+            return False
         if grid[x+1][y] > 0:
             return False
     return True
@@ -29,6 +33,8 @@ def check_left(shape, grid):
     left_face = shape.get_left_face()
     for coord in left_face:
         x, y = coord
+        if y - 1 < 0:
+            return False
         if grid[x][y-1] > 0:
             return False
     return True
@@ -37,6 +43,8 @@ def check_right(shape, grid):
     right_face = shape.get_right_face()
     for coord in right_face:
         x, y = coord
+        if y + 1 >= len(grid):
+            return False
         if grid[x][y+1] > 0:
             return False
     return True
