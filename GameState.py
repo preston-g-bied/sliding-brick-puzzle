@@ -38,6 +38,14 @@ class GameState:
 
         self._create_shapes()
 
+    # the following functions allow GameState to be hashable, so it can be added to a set
+    def __eq__(self, other):
+        return self.compare(other)
+    
+    def __hash__(self):
+        # a tuple of tuples is immutable, so it can be hashed
+        return hash(tuple(map(tuple, self.grid)))
+
     def print(self):
         print(f'{self.cols}, {self.rows},')
 
