@@ -43,7 +43,7 @@ def check_right(shape, grid):
     right_face = shape.get_right_face()
     for coord in right_face:
         x, y = coord
-        if y + 1 >= len(grid):
+        if y + 1 >= len(grid[0]):
             return False
         if grid[x][y+1] > 0:
             return False
