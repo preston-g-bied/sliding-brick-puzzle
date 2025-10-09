@@ -155,6 +155,10 @@ class GameState:
                 elif norm.grid[x][y] > next_idx:
                     norm._swap_idx(next_idx, norm.grid[x][y])
                     next_idx += 1
+
+        # create shapes for normalized state
+        norm._create_shapes()
+
         return norm
     
     def _swap_idx(self, idx1, idx2):
