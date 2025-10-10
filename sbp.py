@@ -3,43 +3,55 @@ import ast
 from GameState import GameState
 from GameState import random_walk
 
-command = sys.argv[1]
-
-if command == "print":
-    gs = GameState('SBP-levels/' + sys.argv[2])
+def handle_print(args):
+    gs = GameState('SBP-levels/' + args[0])
     gs.print()
 
-if command == "done":
-    gs = GameState('SBP-levels/' + sys.argv[2])
+def handle_done(args):
+    gs = GameState('SBP-levels/' + args[0])
     print(gs.is_solved())
 
-if command == "availableMoves":
-    gs = GameState('SBP-levels/' + sys.argv[2])
+def handle_available_moves(args):
+    gs = GameState('SBP-levels/' + args[0])
     all_moves = gs.get_all_moves()
     gs.print_all_moves(all_moves)
 
-if command == "applyMove":
-    gs = GameState('SBP-levels/' + sys.argv[2])
+def handle_apply_move(args):
+    gs = GameState('SBP-levels/' + args[0])
 
     # convert arg to tuple
-    arg = sys.argv[3].strip('()')
+    arg = args[1].strip('()')
     parts = arg.split(',')
     move_tuple = (int(parts[0]), parts[1])
     
     gs.apply_move(move_tuple)
     gs.print()
 
-if command == "compare":
-    gs1 = GameState('SBP-levels/' + sys.argv[2])
-    gs2 = GameState('SBP-levels/' + sys.argv[3])
+def handle_compare(args):
+    gs1 = GameState('SBP-levels/' + args[0])
+    gs2 = GameState('SBP-levels/' + args[1])
     print(gs1.compare(gs2))
 
-if command == "norm":
-    gs = GameState('SBP-levels/' + sys.argv[2])
+def handle_norm(args):
+    gs = GameState('SBP-levels/' + args[0])
     norm_gs = gs.normalize()
     norm_gs.print()
 
-if command == "random":
-    gs = GameState('SBP-levels/' + sys.argv[2])
-    N = int(sys.argv[3])
+def handle_random(args):
+    gs = GameState('SBP-levels/' + args[0])
+    N = int(args[1])
     random_walk(gs, N)
+
+command_handlers = {
+    'print': handle_print,
+    'done': handle_done,
+    'availableMoves': handle_available_moves,
+    'applyMove': handle_apply_move,
+    'compare': handle_compare,
+    'norm': handle_norm,
+    'random': handle_random
+}
+
+command = sys.argv[1]
+handler = command_handlers[command]
+handler(sys.argv[2:])
