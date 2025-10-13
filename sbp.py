@@ -1,7 +1,7 @@
 import sys
-import ast
 from GameState import GameState
 from GameState import random_walk
+from search import bfs
 
 def handle_print(args):
     gs = GameState('SBP-levels/' + args[0])
@@ -42,6 +42,10 @@ def handle_random(args):
     N = int(args[1])
     random_walk(gs, N)
 
+def handle_bfs(args):
+    gs = GameState('SBP-levels/' + args[0])
+    bfs(gs)
+
 command_handlers = {
     'print': handle_print,
     'done': handle_done,
@@ -49,7 +53,8 @@ command_handlers = {
     'applyMove': handle_apply_move,
     'compare': handle_compare,
     'norm': handle_norm,
-    'random': handle_random
+    'random': handle_random,
+    'bfs': handle_bfs
 }
 
 command = sys.argv[1]
