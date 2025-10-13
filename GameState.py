@@ -154,14 +154,16 @@ class GameState:
     def normalize(self):
         # return normalized grid
         # taken from pseudocode in assignment sheet
+        # modified helper function
         norm = self.clone()
         next_idx = 3
         for x in range(norm.rows):
             for y in range(norm.cols):
-                if norm.grid[x][y] == next_idx:
+                current_id = norm.grid[x][y]
+                if current_id == next_idx:
                     next_idx += 1
-                elif norm.grid[x][y] > next_idx:
-                    norm._swap_idx(next_idx, norm.grid[x][y])
+                elif current_id > next_idx:
+                    norm._rename_shape(current_id, next_idx)
                     next_idx += 1
 
         # create shapes for normalized state
@@ -169,14 +171,12 @@ class GameState:
 
         return norm
     
-    def _swap_idx(self, idx1, idx2):
-        # helper function taken from pseudocode in assignment sheet
+    def _rename_shape(self, old_id, new_id):
+        # jelper function to rename a shape's ID throughout the grid
         for x in range(self.rows):
             for y in range(self.cols):
-                if self.grid[x][y] == idx1:
-                    self.grid[x][y] = idx2
-                elif self.grid[x][y] == idx2:
-                    self.grid[x][y] = idx1
+                if self.grid[x][y] == old_id:
+                    self.grid[x][y] = new_id
 
 def random_walk(state, N):
     # print initial state

@@ -7,7 +7,7 @@ def bfs(state: GameState):
     start_time = time.time()
 
     # normalize initial state
-    state = state.normalize()
+    normalized_state = state.normalize()
 
     # frontier is a FIFO queue with initial state
     # stores a tuple with the state and the list of moves needed to reach it
@@ -16,17 +16,17 @@ def bfs(state: GameState):
 
     # create set of reached states and add initial state
     reached = set()
-    reached.add(state)
+    reached.add(normalized_state)
 
     # return if at the goal state
-    if state.is_solved():
+    if normalized_state.is_solved():
         end_time = time.time()
         duration = end_time - start_time
-        state.print()
+        normalized_state.print()
         print(f"Total search time: {int(duration*1000)}ms")
         print("Total nodes visited: 1")
         print("Total solution length: 1")
-        return state
+        return normalized_state
 
     # loop while frontier is not empty
     while not len(frontier) == 0:
