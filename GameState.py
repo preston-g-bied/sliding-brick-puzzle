@@ -152,23 +152,35 @@ class GameState:
         return True
     
     def normalize(self):
-        # return normalized grid
-        # taken from pseudocode in assignment sheet
-        # modified helper function
+        """Return normalized grid - fixes collision bug"""
         norm = self.clone()
-        next_idx = 3
+        
+        # Find all unique shape IDs > 2 in row-major order
+        shape_ids = []
+        seen = set()
         for x in range(norm.rows):
             for y in range(norm.cols):
-                current_id = norm.grid[x][y]
-                if current_id == next_idx:
-                    next_idx += 1
-                elif current_id > next_idx:
-                    norm._rename_shape(current_id, next_idx)
-                    next_idx += 1
-
-        # create shapes for normalized state
+                sid = norm.grid[x][y]
+                if sid > 2 and sid not in seen:
+                    shape_ids.append(sid)
+                    seen.add(sid)
+        
+        # Create mapping to sequential IDs starting from 3
+        id_map = {old_id: i + 3 for i, old_id in enumerate(shape_ids)}
+        
+        # Create NEW grid with mapped IDs (avoids collisions)
+        new_grid = []
+        for x in range(norm.rows):
+            new_row = []
+            for y in range(norm.cols):
+                old_val = norm.grid[x][y]
+                new_val = id_map.get(old_val, old_val)  # Map if shape, else keep same (walls/empty/goal)
+                new_row.append(new_val)
+            new_grid.append(new_row)
+        
+        norm.grid = new_grid
         norm._create_shapes()
-
+        
         return norm
     
     def _rename_shape(self, old_id, new_id):
