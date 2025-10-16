@@ -107,10 +107,15 @@ class GameState:
     def get_all_moves(self):
         # get moves is called for each shape, and all moves are appended to a list
         all_moves = []
-        for shape_id in sorted(self.shapes.keys()):
-            shape = self.shapes[shape_id]
-            moves = shape.get_all_moves(self.grid)
+        # check for master brick first
+        if 2 in self.shapes:
+            moves = self.shapes[2].get_all_moves(self.grid)
             all_moves += moves
+        for shape_id in sorted(self.shapes.keys()):
+            if shape_id != 2:
+                shape = self.shapes[shape_id]
+                moves = shape.get_all_moves(self.grid)
+                all_moves += moves
         return all_moves
     
     def print_all_moves(self, all_moves):
