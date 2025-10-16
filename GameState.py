@@ -36,7 +36,8 @@ class GameState:
                 if self.base_grid[x][y] > 1:
                     self.base_grid[x][y] = 0
 
-        self._create_shapes()
+        # create empty shapes dict
+        self.shapes = {}
 
     # the following functions allow GameState to be hashable, so it can be added to a set
     def __eq__(self, other):
@@ -70,9 +71,6 @@ class GameState:
         new_gamestate.grid = copy.deepcopy(self.grid)
         new_gamestate.base_grid = copy.deepcopy(self.base_grid)
 
-        # create shapes for new state
-        new_gamestate._create_shapes()
-
         return new_gamestate
     
     def is_solved(self):
@@ -105,6 +103,9 @@ class GameState:
             self.shapes[id] = new_shape
 
     def get_all_moves(self):
+        # create shapes
+        if not self.shapes:
+            self._create_shapes()
         # get moves is called for each shape, and all moves are appended to a list
         all_moves = []
         # check for master brick first
@@ -123,6 +124,10 @@ class GameState:
             print(move)
 
     def apply_move(self, shape_move):
+        # create shapes
+        if not self.shapes:
+            self._create_shapes()
+        
         shape_id, move = shape_move
         shape = self.shapes[shape_id]
         
@@ -159,14 +164,17 @@ class GameState:
     
     def normalize(self):
         """Return normalized grid - fixes collision bug"""
-        norm = self.clone()
+        norm = GameState()
+        norm.cols = self.cols
+        norm.rows = self.rows
+        norm.base_grid = copy.deepcopy(self.base_grid)
         
         # Find all unique shape IDs > 2 in row-major order
         shape_ids = []
         seen = set()
         for x in range(norm.rows):
             for y in range(norm.cols):
-                sid = norm.grid[x][y]
+                sid = self.grid[x][y]
                 if sid > 2 and sid not in seen:
                     shape_ids.append(sid)
                     seen.add(sid)
@@ -175,17 +183,14 @@ class GameState:
         id_map = {old_id: i + 3 for i, old_id in enumerate(shape_ids)}
         
         # Create NEW grid with mapped IDs (avoids collisions)
-        new_grid = []
+        norm.grid = []
         for x in range(norm.rows):
             new_row = []
             for y in range(norm.cols):
-                old_val = norm.grid[x][y]
+                old_val = self.grid[x][y]
                 new_val = id_map.get(old_val, old_val)  # Map if shape, else keep same (walls/empty/goal)
                 new_row.append(new_val)
-            new_grid.append(new_row)
-        
-        norm.grid = new_grid
-        norm._create_shapes()
+            norm.grid.append(new_row)
         
         return norm
     
