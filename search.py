@@ -125,11 +125,8 @@ def dls(state: GameState, depth_limit):
     frontier = deque()
     frontier.append((state, []))
 
-    frontier_set = set()
-    frontier_set.add(state)
-
-    # create set of reached states and add initial state
-    reached = set()
+    # manually track visited nodes with no reached list
+    nodes_visited = 0
 
     # return if at the goal state
     if state.is_solved():
@@ -139,11 +136,10 @@ def dls(state: GameState, depth_limit):
     while frontier:
         # pop state from frontier and get all possible moves (expand)
         state, previous_moves = frontier.pop()
+        nodes_visited += 1
         # check if popped state is goal
         if state.is_solved():
-            return (previous_moves, len(reached))
-        # add popped state to reached
-        reached.add(state)
+            return (previous_moves, nodes_visited)
 
         # check for depth cutoff
         if len(previous_moves) < depth_limit:
@@ -151,11 +147,9 @@ def dls(state: GameState, depth_limit):
             for move in state.get_all_moves():
                 # get state of possible move
                 move_state = state.apply_move_clone(move).normalize()
-                if move_state not in reached and move_state not in frontier_set:
-                    # if not reached state, add to reached and frontier
-                    frontier.append((move_state, previous_moves + [move]))
-                    frontier_set.add(move_state)
-    return (None, len(reached))
+                frontier.append((move_state, previous_moves + [move]))
+
+    return (None, nodes_visited)
 
 def ids(state: GameState):
     # keep track of time, total nodes, and current depth
