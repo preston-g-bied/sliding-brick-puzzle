@@ -133,13 +133,7 @@ def dls(state: GameState, depth_limit):
 
     # return if at the goal state
     if state.is_solved():
-        end_time = time.time()
-        duration = end_time - start_time
-        state.print()
-        print(f"Total search time: {int(duration*1000)}ms")
-        print("Total nodes visited: 1")
-        print("Total solution length: 1")
-        return
+        return ([], 1)
 
     # loop while frontier is not empty
     while frontier:
@@ -147,16 +141,7 @@ def dls(state: GameState, depth_limit):
         state, previous_moves = frontier.pop()
         # check if popped state is goal
         if state.is_solved():
-            end_time = time.time()
-            duration = end_time - start_time
-            # print all moves needed to get to goal, and keep track of length
-            for m in previous_moves:
-                print(m)
-            state.print()
-            print(f"Total search time: {int(duration*1000)}ms")
-            print(f"Total nodes visited: {len(reached)}")
-            print(f"Total solution length: {len(previous_moves)}")
-            return
+            return (previous_moves, len(reached))
         # add popped state to reached
         reached.add(state)
 
@@ -170,12 +155,33 @@ def dls(state: GameState, depth_limit):
                     # if not reached state, add to reached and frontier
                     frontier.append((move_state, previous_moves + [move]))
                     frontier_set.add(move_state)
-    return False
+    return (None, len(reached))
 
 def ids(state: GameState):
+    # keep track of time, total nodes, and current depth
+    start_time = time.time()
+    total_nodes = 0
     depth = 0
+
     while True:
-        result = dls(state, depth)
-        if result:
-            return result
+        # return solution state and nodes expanded
+        solution, nodes = dls(state, depth)
+        # keep track of total nodes
+        total_nodes += nodes
+
+        if solution is not None:
+            # found solution - print results
+            end_time = time.time()
+            duration = end_time - start_time
+            for m in solution:
+                print(m)
+            final_state = state.normalize()
+            for m in solution:
+                final_state = final_state.apply_move_clone(m)
+            final_state.print()
+            print(f"Total search time: {int(duration*1000)}ms")
+            print(f"Total nodes visited: {total_nodes}")
+            print(f"Total solution length: {len(solution)}")
+            return
+        
         depth += 1
