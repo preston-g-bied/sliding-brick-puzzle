@@ -190,7 +190,7 @@ def manhattan_distance(state: GameState):
     target_coordinate = None
     for x in range(state.rows):
         for y in range(state.cols):
-            if state.grid[x][y] == -1:
+            if state.base_grid[x][y] == -1:
                 goal_coordinate = [x, y]
                 break
         if goal_coordinate is not None:
