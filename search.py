@@ -1,7 +1,7 @@
 from GameState import GameState
 from collections import deque
-from queue import PriorityQueue
 import time
+from queue import PriorityQueue
 
 def bfs(state: GameState):
     # keep track of execution time
@@ -179,3 +179,77 @@ def ids(state: GameState):
             return
         
         depth += 1
+
+def manhattan_distance(state: GameState):
+    # find a coordinate for the goal and for the target shape
+    # i am just picking the first two i see
+    for x in range(state.rows):
+        for y in range(state.cols):
+            if state.grid[x][y] == -1:
+                goal_coordinate = (x, y)
+                break
+    for x in range(state.rows):
+        for y in range(state.cols):
+            if state.grid[x][y] == 2:
+                target_coordinate = (x, y)
+                break
+    # find manhattan distance between goal and target
+    x1, y1 = target_coordinate
+    x2, y2 = goal_coordinate
+    return abs(x2 - x1) + abs(y2 - y1)
+
+def h(state: GameState):
+    return manhattan_distance(state)
+
+def astar(state: GameState):
+    # keep track of execution time
+    start_time = time.time()
+
+    # normalize initial state
+    state = state.normalize()
+
+    # frontier is a priority queue sorted by g(n) + h(n)
+    frontier = PriorityQueue()
+    frontier.put((h(state), (state, [])))
+
+    # create set of reached states and add initial state
+    reached = set()
+
+    # return if at the goal state
+    if state.is_solved():
+        end_time = time.time()
+        duration = end_time - start_time
+        state.print()
+        print(f"Total search time: {int(duration*1000)}ms")
+        print("Total nodes visited: 1")
+        print("Total solution length: 1")
+        return
+
+    # loop while frontier is not empty
+    while frontier:
+        # pop state from frontier and get all possible moves (expand)
+        priority, state_moves = frontier.get()
+        state, previous_moves = state_moves
+        # check if popped state is goal
+        if state.is_solved():
+            end_time = time.time()
+            duration = end_time - start_time
+            # print all moves needed to get to goal, and keep track of length
+            for m in previous_moves:
+                print(m)
+            state.print()
+            print(f"Total search time: {int(duration*1000)}ms")
+            print(f"Total nodes visited: {len(reached)}")
+            print(f"Total solution length: {len(previous_moves)}")
+            return
+        # add popped state to reached
+        reached.add(state)
+        # loop through possible moves
+        for move in state.get_all_moves():
+            # get state of possible move
+            move_state = state.apply_move_clone(move).normalize()
+            if move_state not in reached:
+                # if not reached state, add to reached and frontier
+                g = len(previous_moves)
+                f = g + h(move_state)
+                frontier.put(f, (move_state, previous_moves + [move]))
