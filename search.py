@@ -181,18 +181,27 @@ def ids(state: GameState):
         depth += 1
 
 def manhattan_distance(state: GameState):
+    # if the state is solved, distance is 0
+    if state.is_solved():
+        return 0
     # find a coordinate for the goal and for the target shape
     # i am just picking the first two i see
+    goal_coordinate = None
+    target_coordinate = None
     for x in range(state.rows):
         for y in range(state.cols):
             if state.grid[x][y] == -1:
-                goal_coordinate = (x, y)
+                goal_coordinate = [x, y]
                 break
+        if goal_coordinate is not None:
+            break
     for x in range(state.rows):
         for y in range(state.cols):
             if state.grid[x][y] == 2:
-                target_coordinate = (x, y)
+                target_coordinate = [x, y]
                 break
+        if target_coordinate is not None:
+            break
     # find manhattan distance between goal and target
     x1, y1 = target_coordinate
     x2, y2 = goal_coordinate
@@ -210,7 +219,9 @@ def astar(state: GameState):
 
     # frontier is a priority queue sorted by g(n) + h(n)
     frontier = PriorityQueue()
-    frontier.put((h(state), (state, [])))
+    counter = 0
+    frontier.put((h(state), counter, (state, [])))
+    counter += 1
 
     # create set of reached states and add initial state
     reached = set()
@@ -228,7 +239,7 @@ def astar(state: GameState):
     # loop while frontier is not empty
     while frontier:
         # pop state from frontier and get all possible moves (expand)
-        priority, state_moves = frontier.get()
+        priority, _, state_moves = frontier.get()
         state, previous_moves = state_moves
         # check if popped state is goal
         if state.is_solved():
@@ -242,14 +253,16 @@ def astar(state: GameState):
             print(f"Total nodes visited: {len(reached)}")
             print(f"Total solution length: {len(previous_moves)}")
             return
+        if state in reached:
+            continue
         # add popped state to reached
         reached.add(state)
         # loop through possible moves
         for move in state.get_all_moves():
             # get state of possible move
             move_state = state.apply_move_clone(move).normalize()
-            if move_state not in reached:
-                # if not reached state, add to reached and frontier
-                g = len(previous_moves)
-                f = g + h(move_state)
-                frontier.put(f, (move_state, previous_moves + [move]))
+            # if not reached state, add to reached and frontier
+            g = len(previous_moves) + 1
+            f = g + h(move_state)
+            frontier.put((f, counter, (move_state, previous_moves + [move])))
+            counter += 1
