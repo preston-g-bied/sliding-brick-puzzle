@@ -192,9 +192,33 @@ def manhattan_distance(state: GameState):
     # return manhattan distance
     return abs(x2 - x1) + abs(y2 - y1)
 
-def h(state: GameState):
-    # this function is just to rename my heuristic to be h
-    return manhattan_distance(state)
+def manhattan_with_blocking_penalty(state: GameState):
+    # find master and goal
+    state._find_master_and_goal()
+    # if the state is solved, distance is 0
+    if state.is_solved():
+        return 0
+    # save master and goal
+    x1, y1 = state._master_pos
+    x2, y2 = state._goal_pos
+    # return manhattan distance
+    base_distance = abs(x2 - x1) + abs(y2 - y1)
+
+    # add penality for blocking pieces
+    blocking_penalty = 0
+    # check if pieces are between master and goal
+    for x in range(min(x1, x2), max(x1, x2) + 1):
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            if state.grid[x][y] > 2:
+                blocking_penalty += 1
+
+    return base_distance + blocking_penalty
+
+def h(state: GameState, heuristic):
+    if heuristic == "manhattan":
+        return manhattan_distance(state)
+    if heuristic == "manhattan_penalty":
+        return manhattan_with_blocking_penalty(state)
 
 def astar(state: GameState):
     # keep track of execution time
