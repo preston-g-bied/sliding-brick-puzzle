@@ -56,7 +56,11 @@ def handle_ids(args):
 
 def handle_astar(args):
     gs = GameState('SBP-levels/' + args[0])
-    astar(gs)
+    astar(gs, "manhattan")
+
+def handle_competition(args):
+    gs = GameState('SBP-levels/' + args[0])
+    astar(gs, "manhattan_penalty")
 
 command_handlers = {
     'print': handle_print,
@@ -69,7 +73,8 @@ command_handlers = {
     'bfs': handle_bfs,
     'dfs': handle_dfs,
     'ids': handle_ids,
-    'astar': handle_astar
+    'astar': handle_astar,
+    'competition': handle_competition
 }
 
 command = sys.argv[1]

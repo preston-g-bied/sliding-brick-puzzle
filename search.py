@@ -220,7 +220,7 @@ def h(state: GameState, heuristic):
     if heuristic == "manhattan_penalty":
         return manhattan_with_blocking_penalty(state)
 
-def astar(state: GameState):
+def astar(state: GameState, heuristic):
     # keep track of execution time
     start_time = time.time()
 
@@ -230,7 +230,7 @@ def astar(state: GameState):
     # frontier is a priority queue sorted by g(n) + h(n)
     frontier = PriorityQueue()
     counter = 0
-    frontier.put((h(state), counter, (state, [])))
+    frontier.put((h(state, heuristic), counter, (state, [])))
     counter += 1
 
     # create set of reached states and add initial state
@@ -273,6 +273,6 @@ def astar(state: GameState):
             move_state = state.apply_move_clone(move).normalize()
             # if not reached state, add to reached and frontier
             g = len(previous_moves) + 1
-            f = g + h(move_state)
+            f = g + h(move_state, heuristic)
             frontier.put((f, counter, (move_state, previous_moves + [move])))
             counter += 1
