@@ -39,13 +39,22 @@ class GameState:
         # create empty shapes dict
         self.shapes = {}
 
+        # hash caching
+        self._hash_cache = None
+
+        # caching master shape and goals to speed up manhattan distance
+        self._master_pos = None
+        self._goal_pos = None
+
     # the following functions allow GameState to be hashable, so it can be added to a set
     def __eq__(self, other):
         return self.compare(other)
     
     def __hash__(self):
         # a tuple of tuples is immutable, so it can be hashed
-        return hash(tuple(map(tuple, self.grid)))
+        if self._hash_cache is None:
+            self._hash_cache = hash(tuple(map(tuple, self.grid)))
+        return self._hash_cache
 
     def print(self):
         print(f'{self.cols}, {self.rows},')
@@ -200,6 +209,17 @@ class GameState:
             for y in range(self.cols):
                 if self.grid[x][y] == old_id:
                     self.grid[x][y] = new_id
+
+    def _find_master_and_goal(self):
+        if self._master_pos is None:
+            for x in range(self.rows):
+                for y in range(self.cols):
+                    if self.base_grid[x][y] == -1:
+                        self._goal_pos = (x, y)
+                    if self.grid[x][y] == 2:
+                        self._master_pos = (x, y)
+                    if self._master_pos and self._goal_pos:
+                        return
 
 def random_walk(state, N):
     # print initial state

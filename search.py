@@ -181,33 +181,19 @@ def ids(state: GameState):
         depth += 1
 
 def manhattan_distance(state: GameState):
+    # find master and goal
+    state._find_master_and_goal()
     # if the state is solved, distance is 0
     if state.is_solved():
         return 0
-    # find a coordinate for the goal and for the target shape
-    # i am just picking the first two i see
-    goal_coordinate = None
-    target_coordinate = None
-    for x in range(state.rows):
-        for y in range(state.cols):
-            if state.base_grid[x][y] == -1:
-                goal_coordinate = [x, y]
-                break
-        if goal_coordinate is not None:
-            break
-    for x in range(state.rows):
-        for y in range(state.cols):
-            if state.grid[x][y] == 2:
-                target_coordinate = [x, y]
-                break
-        if target_coordinate is not None:
-            break
-    # find manhattan distance between goal and target
-    x1, y1 = target_coordinate
-    x2, y2 = goal_coordinate
+    # save master and goal
+    x1, y1 = state._master_pos
+    x2, y2 = state._goal_pos
+    # return manhattan distance
     return abs(x2 - x1) + abs(y2 - y1)
 
 def h(state: GameState):
+    # this function is just to rename my heuristic to be h
     return manhattan_distance(state)
 
 def astar(state: GameState):
