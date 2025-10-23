@@ -1,1 +1,2 @@
-DOCUMENTATION_A2.pdf
+*.pdf
+.DS_Store
